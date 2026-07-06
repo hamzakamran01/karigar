@@ -1,65 +1,79 @@
-import Image from "next/image";
+import Link from "next/link";
 
-export default function Home() {
+export default function HomePage() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="flex-1 w-full flex flex-col items-center justify-center p-6 relative overflow-hidden">
+      {/* Background Decorators */}
+      <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-primary/20 blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] rounded-full bg-blue-600/20 blur-[120px] pointer-events-none" />
+
+      {/* Hero Section */}
+      <section className="animate-slide-up-fade z-10 max-w-5xl mx-auto flex flex-col items-center text-center space-y-8 mt-24">
+
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-primary/30 bg-primary/10 text-primary text-sm font-medium">
+          <span className="flex h-2 w-2 rounded-full bg-primary animate-pulse" />
+          MehnatKash Enterprise 2.0 is Live
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+
+        <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-white font-[family-name:var(--font-heading)] leading-tight">
+          Supercharge your <br className="hidden md:block" />
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-400">
+            Local Services
+          </span>
+        </h1>
+
+        <p className="max-w-[42rem] leading-normal text-muted-foreground sm:text-lg sm:leading-8">
+          The worlds first AI-native marketplace connecting vetted professionals with elite consumers. Transparent pricing, dynamic scheduling, and unmatched reliability.
+        </p>
+
+        <div className="flex gap-4 items-center pt-4">
+          <Link
+            href="/explore"
+            className="group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-xl bg-primary px-8 font-medium text-primary-foreground focus:outline-none hover:bg-primary/90 transition shadow-[0_0_40px_-10px_rgba(139,92,246,0.5)]"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            Find a Professional
+            <div className="absolute inset-0 flex h-full w-full justify-center [transform:skew(-12deg)_translateX(-100%)] group-hover:duration-1000 group-hover:[transform:skew(-12deg)_translateX(100%)]">
+              <div className="relative h-full w-8 bg-white/20" />
+            </div>
+          </Link>
+
+          <Link
+            href="/provider/onboarding"
+            className="inline-flex h-12 items-center justify-center rounded-xl border border-white/10 bg-white/5 px-8 font-medium text-white transition-colors hover:bg-white/10 hover:text-white"
           >
-            Documentation
-          </a>
+            Become a Partner
+          </Link>
         </div>
-      </main>
+      </section>
+
+      {/* Feature Grids - Glassmorphism */}
+      <section className="w-full max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 mt-32 z-10 pb-20">
+        {[
+          {
+            title: "AI Matchmaking",
+            description: "Our proprietary AI engine guarantees you get the right expert at the fairest market price in milliseconds.",
+            icon: "🧠"
+          },
+          {
+            title: "Zero-Trust Security",
+            description: "Payments are held in secure escrow. Every provider undergoes an exhaustive multi-tier verification process.",
+            icon: "🛡️"
+          },
+          {
+            title: "Live Command Center",
+            description: "Track your provider on a map, chat via encrypted channels, and review metrics in real-time.",
+            icon: "⚡"
+          }
+        ].map((feature, idx) => (
+          <div key={idx} className="glass-panel p-8 flex flex-col gap-4 group hover:scale-[1.02] transition-transform duration-300">
+            <span className="text-4xl">{feature.icon}</span>
+            <h3 className="text-xl font-semibold text-white">{feature.title}</h3>
+            <p className="text-muted-foreground leading-relaxed">
+              {feature.description}
+            </p>
+          </div>
+        ))}
+      </section>
     </div>
   );
 }

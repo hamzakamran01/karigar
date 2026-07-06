@@ -1,0 +1,156 @@
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  CUSTOMER
+  PROVIDER
+  ADMIN
+}
+
+enum BookingStatus {
+  REQUESTED
+  ACCEPTED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  DISPUTED
+}
+
+model User {
+  id               String           @id @default(uuid())
+  email            String           @unique
+  fullName         String
+  phoneNumber      String?          @unique
+  avatarUrl        String?
+  role             Role             @default(CUSTOMER)
+  
+  providerProfile  ProviderProfile?
+  customerBookings Booking[]        @relation("CustomerBookings")
+  reviewsGiven     Review[]         @relation("ReviewAuthor")
+  wallet           Wallet?          // Integrated payment/escrow system
+
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+}
+
+model ProviderProfile {
+  id              String            @id @default(uuid())
+  userId          String            @unique
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  businessName    String?
+  bio             String?           @db.Text
+  experienceYears Int?
+  isVerified      Boolean           @default(false)
+  kycDocumentUrl  String?
+  
+  latitude        Float?
+  longitude       Float?
+  serviceRadiusKm Float?            @default(10.0)
+  address         String?
+  city            String?
+
+  services        ServiceCatalog[]
+  bookings        Booking[]         @relation("ProviderBookings")
+  reviewsReceived Review[]          @relation("ReviewTarget")
+
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+}
+
+model ServiceCatalog {
+  id              String           @id @default(uuid())
+  providerId      String
+  provider        ProviderProfile  @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  
+  title           String
+  description     String           @db.Text
+  basePrice       Float
+  priceUnit       String           // e.g "per hour", "fixed"
+  category        String           // e.g "plumbing", "electrical"
+  
+  isActive        Boolean          @default(true)
+
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+}
+
+model Booking {
+  id              String           @id @default(uuid())
+  customerId      String
+  customer        User             @relation("CustomerBookings", fields: [customerId], references: [id])
+  
+  providerId      String
+  provider        ProviderProfile  @relation("ProviderBookings", fields: [providerId], references: [id])
+  
+  status          BookingStatus    @default(REQUESTED)
+  
+  scheduledAt     DateTime?
+  serviceAddress  String
+  serviceLat      Float?
+  serviceLng      Float?
+  
+  quotedPrice     Float
+  finalPrice      Float?
+  
+  customerNotes   String?          @db.Text
+  
+  review          Review?
+  transaction     Transaction?
+
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+}
+
+model Review {
+  id              String           @id @default(uuid())
+  bookingId       String           @unique
+  booking         Booking          @relation(fields: [bookingId], references: [id])
+
+  authorId        String
+  author          User             @relation("ReviewAuthor", fields: [authorId], references: [id])
+  
+  targetId        String
+  target          ProviderProfile  @relation("ReviewTarget", fields: [targetId], references: [id])
+  
+  rating          Int              // 1 to 5
+  comment         String?          @db.Text
+  
+  createdAt       DateTime         @default(now())
+}
+
+model Wallet {
+  id              String           @id @default(uuid())
+  userId          String           @unique
+  user            User             @relation(fields: [userId], references: [id])
+  
+  balance         Float            @default(0.0)
+  stripeAccountId String?
+  
+  transactions    Transaction[]
+
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+}
+
+model Transaction {
+  id              String           @id @default(uuid())
+  walletId        String
+  wallet          Wallet           @relation(fields: [walletId], references: [id])
+  
+  bookingId       String?          @unique
+  booking         Booking?         @relation(fields: [bookingId], references: [id])
+  
+  amount          Float
+  type            String           // e.g DEPOSIT, WITHDRAWAL, ESCROW_HOLD, ESCROW_RELEASE
+  status          String           // e.g PENDING, COMPLETED, FAILED
+
+  createdAt       DateTime         @default(now())
+}
